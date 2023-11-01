@@ -143,9 +143,9 @@
 
 				const intersects = raycaster.intersectObjects( scene.children, false );
 
-				if ( intersects.length > 0 ) {
+				if ( intersects.length > 0 ) { //判断鼠标是否在模型上
 
-					if ( INTERSECTED != intersects[ 0 ].object ) {
+					if ( INTERSECTED != intersects[ 0 ].object ) { //判断模型是否发生变化
 
 						if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
@@ -155,7 +155,7 @@
 
 					}
 
-				} else {
+				} else { //鼠标不在模型上恢复其颜色
 
 					if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 

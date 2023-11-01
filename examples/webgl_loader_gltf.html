@@ -61,9 +61,21 @@
 						// model
 
 						const loader = new GLTFLoader().setPath( 'models/gltf/DamagedHelmet/glTF/' );
-						loader.load( 'DamagedHelmet.gltf', function ( gltf ) {
-
-							scene.add( gltf.scene );
+						loader.load( '内柜.gltf', function ( gltf ) {
+							const model = gltf.scene
+							const geometry = new THREE.BoxGeometry( 100, 100, 100 );
+							const edges = new THREE.EdgesGeometry( geometry );
+							const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) );
+							line.position.set(0,0,0)
+							scene.add( line )
+							const boundingBox = new THREE.Box3().setFromObject(model)
+        			const modelSize = new THREE.Vector3()
+        			boundingBox.getSize(modelSize)
+        			console.log('模型的大小:', modelSize)
+							scene.add(model)
+							scene.add(edges);
+							// scene.add(group1)
+							// scene.add( gltf.scene.children[11]);
 
 							render();
 
