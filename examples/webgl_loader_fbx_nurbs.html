@@ -48,6 +48,12 @@
 				// grid
 				const gridHelper = new THREE.GridHelper( 28, 28, 0x303030, 0x303030 );
 				scene.add( gridHelper );
+				// light
+				const light = new THREE.DirectionalLight( 0xd5deff );
+				light.position.x = 300;
+				light.position.y = 250;
+				light.position.z = - 500;
+				scene.add( light );
 
 				// stats
 				stats = new Stats();
@@ -55,8 +61,8 @@
 
 				// model
 				const loader = new FBXLoader();
-				loader.load( 'models/fbx/nurbs.fbx', function ( object ) {
-					
+				loader.load( 'models/fbx/各部件元素.FBX', function ( object ) {
+
 					scene.add( object );
 
 				} );
