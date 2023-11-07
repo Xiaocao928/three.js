@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>展开/收起子 div</title>
+    <style>
+        .main {
+            padding: 10px;
+        }
+
+        .son {
+            border: 1px solid #ccc;
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .item {
+            display: none;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="son">子 div 1
+            <div class="item">item 1.1</div>
+            <div class="item">item 1.2</div>
+        </div>
+
+        <div class="son">子 div 2
+            <div class="item">item 2.1</div>
+            <div class="item">item 2.2</div>
+        </div>
+    </div>
+
+    <script>
+        // 获取所有子 div 元素
+        const sonDivs = document.querySelectorAll('.son');
+        
+        // 遍历每个子 div，并为它们添加点击事件监听器
+        sonDivs.forEach((sonDiv) => {
+            sonDiv.addEventListener('click', () => {
+                // 获取当前子 div 内部的所有 item div
+                const items = sonDiv.querySelectorAll('.item');
+
+                // 遍历内部的 item 元素并切换它们的显示和隐藏状态
+                items.forEach((item) => {
+                    if (item.style.display === 'none' || item.style.display === '') {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

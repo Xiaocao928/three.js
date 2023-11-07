@@ -32,6 +32,7 @@
 			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 			let camera, scene, renderer, bulbLight, bulbMat, hemiLight, stats;
 			let ballMat, cubeMat, floorMat;
@@ -195,6 +196,25 @@
 					ballMat.needsUpdate = true;
 
 				} );
+				const loader = new GLTFLoader()
+						loader.load( 'http://10.7.0.194:8080/完整档案柜.gltf', function ( gltf ) {
+							const model = gltf.scene
+							console.log(model)
+							model.children[12].children.forEach(item => {
+								item.material = floorMat
+							})
+							model.scale.set(0.1,0.1,0.1)
+							model.position.set(1.5, 1, 2)
+							// const boundingBox = new THREE.Box3().setFromObject(model)
+        			// const modelSize = new THREE.Vector3()
+        			// boundingBox.getSize(modelSize)
+        			// console.log('模型的大小:', modelSize)
+							scene.add(model)
+							console.log(scene)
+							// const colneModel = model.clone()
+							// colneModel.rotation.y = -Math.PI
+							// scene.add(colneModel)
+						} );
 
 				const floorGeometry = new THREE.PlaneGeometry( 20, 20 );
 				const floorMesh = new THREE.Mesh( floorGeometry, floorMat );

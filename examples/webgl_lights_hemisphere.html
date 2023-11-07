@@ -171,14 +171,15 @@
 
 				const loader = new GLTFLoader();
 
-				loader.load( 'models/gltf/Flamingo.glb', function ( gltf ) {
+				loader.load( 'http://10.7.0.194:8080/完整档案柜.gltf', function ( gltf ) {
 
-					const mesh = gltf.scene.children[ 0 ];
+					const mesh = gltf.scene;
 
 					const s = 0.35;
-					mesh.scale.set( s, s, s );
-					mesh.position.y = 15;
-					mesh.rotation.y = - 1;
+					mesh.position.set(60,30,0)
+					mesh.scale.set( 5,5, 5 );
+					// mesh.position.y = 15;
+					// mesh.rotation.y = - 1;
 
 					mesh.castShadow = true;
 					mesh.receiveShadow = true;
