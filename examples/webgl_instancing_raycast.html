@@ -132,11 +132,14 @@
 				raycaster.setFromCamera( mouse, camera );
 
 				const intersection = raycaster.intersectObject( mesh );
+			
 
 				if ( intersection.length > 0 ) {
-
+					console.log(intersection)
+					console.log(intersection[0])
+					console.log(mesh)
 					const instanceId = intersection[ 0 ].instanceId;
-
+					
 					mesh.getColorAt( instanceId, color );
 
 					if ( color.equals( white ) ) {
