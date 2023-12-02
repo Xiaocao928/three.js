@@ -64,7 +64,7 @@
 			const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
 			const scene = new THREE.Scene();
-			scene.background = new THREE.Color( 0xbfe3dd );
+			// scene.background = new THREE.Color( 0xbfe3dd );
 			scene.environment = pmremGenerator.fromScene( new RoomEnvironment( renderer ), 0.04 ).texture;
 
 			const camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 100 );
@@ -98,6 +98,16 @@
 				console.error( e );
 
 			} );
+			loader.load('http://10.7.0.194:8080/data/gltfModel/各元素部件.gltf', function(gltf) {
+				const model = gltf.scene
+				model.position.set(0, 4, 0)
+				scene.add(model)
+			})
+			loader.load('http://10.7.0.194:8080/data/gltfModel/archive.gltf', function(gltf) {
+				const model = gltf.scene
+				model.position.set(0, 4, 0)
+				scene.add(model)
+			})
 
 
 			window.onresize = function () {

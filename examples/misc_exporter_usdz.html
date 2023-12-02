@@ -78,7 +78,11 @@
 				const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xf0f0f0 );
+				const spotLight = new THREE.SpotLight( 0xffffff )
+				spotLight.intensity = 3
+				spotLight.position.set(0,20,0)
+				scene.add(spotLight)
+				// scene.background = new THREE.Color( 0xf0f0f0 );
 				scene.environment = pmremGenerator.fromScene( new RoomEnvironment( renderer ), 0.04 ).texture;
 
 				const loader = new GLTFLoader().setPath( 'models/gltf/DamagedHelmet/glTF/' );

@@ -51,6 +51,7 @@
 				new RGBELoader()
 					.setPath( 'textures/equirectangular/' )
 					.load( 'royal_esplanade_1k.hdr', function ( texture ) {
+						console.log(texture)
 
 						texture.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -62,23 +63,42 @@
 						// model
 
 						const loader = new GLTFLoader()
-						loader.load( 'http://10.7.0.194:8080/data/gltfModel/filebox.gltf', function ( gltf ) {
+						loader.load( 'http://10.7.0.194:8080/data/gltfModel/archive.gltf', function ( gltf ) {
+							console.log(gltf.scene)
+							const model1 = gltf.scene.children[0]
+							scene.add(gltf.scene)
+							const model2 = gltf.scene.children[1]
 							let geometryArray = []; // 将你的要合并的多个geometry放入到该数组
 							let materialArray = []; // 将你的要赋值的多个material放入到该数组
-							const model = gltf.scene.children[0]
-							console.log(model)
-							model.children.forEach(item => {
-								geometryArray.push(item.geometry)
-								materialArray.push(item.material)
-							})
+							// gltf.scene.children.forEach( item => {
+							// 	if (item.type === 'Group') {
+									model1.children.forEach(element => {
+									geometryArray.push(element.geometry)
+									materialArray.push(element.material)
+									})
+									// model2.children.forEach(element => {
+									// geometryArray.push(element.geometry)
+									// materialArray.push(element.material)
+									// })
+								// }
+							// })
+							// const model = gltf.scene.children[0]
+							// const model2 = gltf.scene.children[3]
+							// console.log(model)
+							// model.children.forEach(item => {
+							// 	geometryArray.push(item.geometry)
+							// 	materialArray.push(item.material)
+							// })
 							// 合并模型
 							console.log(geometryArray);
 							console.log(materialArray);
 							const mergedGeometries = BufferGeometryUtils.mergeBufferGeometries(geometryArray, true);
 							const singleMergeMesh = new THREE.Mesh(mergedGeometries, materialArray)
+							// singleMergeMesh.position.copy(model1.position.clone())
 							scene.add( singleMergeMesh ); // 在场景中添加合并后的mesh(模型)
-							console.log(singleMergeMesh)
-							console.log(scene)
+							// scene.add( model2 ); 
+							// console.log(singleMergeMesh)
+							// console.log(scene)
 
 							// const boundingBox = new THREE.Box3().setFromObject(model)
         			// const modelSize = new THREE.Vector3()
@@ -90,7 +110,8 @@
 							// scene.add(colneModel)
 							// scene.add(group1)
 							// scene.add( gltf.scene.children[11]);
-
+							
+								// scene.add(gltf.scene)
 							render();
 
 						} );
