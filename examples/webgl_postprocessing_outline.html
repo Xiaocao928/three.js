@@ -26,7 +26,7 @@
 
 			import Stats from 'three/addons/libs/stats.module.js';
 			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-
+			import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 			import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 			import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -35,8 +35,9 @@
 			import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 			import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 			import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-			let container, stats;
+			let container, stats, model;
 			let camera, scene, renderer, controls;
 			let composer, effectFXAA, outlinePass;
 
@@ -192,7 +193,87 @@
 					obj3d.add( object );
 
 				} );
+				const loader2 =  new GLTFLoader();
+				loader2.load( 'http://10.7.0.194:8080/data/gltfModel/各元素部件.gltf', function ( gltf ) {
+					model = gltf.scene;
+					model.position.set( 0, 2, 0 );
+					obj3d.add( model );
+				})
+			
+				loader2.load( 'http://10.7.0.194:8080/data/gltfModel/archive.gltf', function ( gltf ) {
+					const model = gltf.scene
+					// scene.add(model)
+					const model1 = model.children.find( (item) => item.name === '外柜1')
+					const model2 = model.children.find( (item) => item.name === '内柜1')
+					const model3 = model.children.find( (item) => item.name === '外柜2')
+					const model4 = model.children.find( (item) => item.name === '内柜2')
+					const meshArr = []
+					const meshArr1 = []
+					let geometryArray = []; // 将你的要合并的多个geometry放入到该数组
+					let materialArray = []; // 将你的要赋值的多个material放入到该数组
+					let geometryArray1 = []; // 将你的要合并的多个geometry放入到该数组
+					let materialArray1 = []; // 将你的要赋值的多个material放入到该数组
+					function traverseMeshes(obj, meshArr) {
+						// 记录已经处理过的对象，避免重复处理
+						const processedObjects = new Set();
 
+						function traverse(child) {
+							if (!processedObjects.has(child)) {
+								processedObjects.add(child);
+
+								child.updateMatrixWorld(true)
+								if (child.isMesh) {
+									child.geometry.applyMatrix4(child.matrixWorld);
+									meshArr.push(child);
+								} else if (child.isGroup) {
+									child.children.forEach(traverse); // 使用 forEach 遍历子对象
+								}
+							}
+						}
+
+						obj.traverse(traverse);
+					}
+					traverseMeshes(model1, meshArr)
+					traverseMeshes(model2, meshArr)
+					meshArr.forEach(mesh => {
+						geometryArray.push(mesh.geometry)
+						materialArray.push(mesh.material)
+					})
+					traverseMeshes(model3, meshArr1)
+					traverseMeshes(model4, meshArr1)
+
+					meshArr.forEach(mesh => {
+						geometryArray1.push(mesh.geometry)
+						materialArray1.push(mesh.material)
+					})
+					console.log(materialArray)
+					const mergedGeometries = BufferGeometryUtils.mergeGeometries(geometryArray, true);
+					const singleMergeMesh = new THREE.Mesh(mergedGeometries, materialArray)
+					const mergedGeometries1 = BufferGeometryUtils.mergeGeometries(geometryArray1, true);
+					const singleMergeMesh1 = new THREE.Mesh(mergedGeometries1, materialArray1)
+					singleMergeMesh.position.set(0, 1, 0)
+					singleMergeMesh1.position.set(1, 1, 0)
+					singleMergeMesh.updateMatrixWorld(true);
+					singleMergeMesh1.updateMatrixWorld(true);
+					singleMergeMesh.geometry.applyMatrix4(singleMergeMesh.matrixWorld)
+					singleMergeMesh1.geometry.applyMatrix4(singleMergeMesh1.matrixWorld)
+					console.log(singleMergeMesh)
+					// 将singleMergeMesh 与 singleMergeMesh1 合并
+					const geoArr = []
+					geoArr.push(singleMergeMesh.geometry)
+					const matArr = singleMergeMesh.material.concat(singleMergeMesh1.material)
+					geoArr.push(singleMergeMesh1.geometry)
+					// matArr.push(singleMergeMesh1.material)
+					console.log(matArr)
+					const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
+					const mergedGeometries2 = BufferGeometryUtils.mergeGeometries(geoArr, true);
+					const singleMergeMesh2 = new THREE.Mesh(mergedGeometries2, matArr)
+					scene.add( singleMergeMesh2 ); // 在场景中添加合并后的mesh(模型)
+					console.log(singleMergeMesh2)
+					// scene.add( singleMergeMesh, singleMergeMesh1 ); // 在场景中添加合并后的mesh(模型)
+					console.log(scene)
+
+				} );
 				scene.add( group );
 
 				group.add( obj3d );

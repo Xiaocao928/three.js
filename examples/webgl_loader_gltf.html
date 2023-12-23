@@ -65,53 +65,84 @@
 						const loader = new GLTFLoader()
 						loader.load( 'http://10.7.0.194:8080/data/gltfModel/archive.gltf', function ( gltf ) {
 							console.log(gltf.scene)
-							const model1 = gltf.scene.children[0]
-							scene.add(gltf.scene)
-							const model2 = gltf.scene.children[1]
+							const model = gltf.scene
+							const model1 = model.children.find( (item) => item.name === '外柜1')
+							const model2 = model.children.find( (item) => item.name === '内柜1')
+							const model3 = model.children.find( (item) => item.name === '外柜2')
+							const model4 = model.children.find( (item) => item.name === '内柜2')
+							const meshArr = []
+							const meshArr1 = []
 							let geometryArray = []; // 将你的要合并的多个geometry放入到该数组
 							let materialArray = []; // 将你的要赋值的多个material放入到该数组
-							// gltf.scene.children.forEach( item => {
-							// 	if (item.type === 'Group') {
-									model1.children.forEach(element => {
-									geometryArray.push(element.geometry)
-									materialArray.push(element.material)
-									})
-									// model2.children.forEach(element => {
-									// geometryArray.push(element.geometry)
-									// materialArray.push(element.material)
-									// })
-								// }
-							// })
-							// const model = gltf.scene.children[0]
-							// const model2 = gltf.scene.children[3]
-							// console.log(model)
-							// model.children.forEach(item => {
-							// 	geometryArray.push(item.geometry)
-							// 	materialArray.push(item.material)
-							// })
-							// 合并模型
-							console.log(geometryArray);
-							console.log(materialArray);
-							const mergedGeometries = BufferGeometryUtils.mergeBufferGeometries(geometryArray, true);
-							const singleMergeMesh = new THREE.Mesh(mergedGeometries, materialArray)
-							// singleMergeMesh.position.copy(model1.position.clone())
-							scene.add( singleMergeMesh ); // 在场景中添加合并后的mesh(模型)
-							// scene.add( model2 ); 
-							// console.log(singleMergeMesh)
-							// console.log(scene)
+							let geometryArray1 = []; // 将你的要合并的多个geometry放入到该数组
+							let materialArray1 = []; // 将你的要赋值的多个material放入到该数组
+							function traverseMeshes(obj, meshArr) {
+								// 记录已经处理过的对象，避免重复处理
+								const processedObjects = new Set();
 
-							// const boundingBox = new THREE.Box3().setFromObject(model)
-        			// const modelSize = new THREE.Vector3()
-        			// boundingBox.getSize(modelSize)
-        			// console.log('模型的大小:', modelSize)
-							// scene.add(model)
-							// const colneModel = model.clone()
-							// colneModel.rotation.y = -Math.PI
-							// scene.add(colneModel)
-							// scene.add(group1)
-							// scene.add( gltf.scene.children[11]);
+								function traverse(child) {
+									if (!processedObjects.has(child)) {
+										processedObjects.add(child);
+
+										child.updateMatrixWorld(true);
+
+										if (child.isMesh) {
+											child.geometry.applyMatrix4(child.matrixWorld);
+											meshArr.push(child);
+										} else if (child.isGroup) {
+											child.children.forEach(traverse); // 使用 forEach 遍历子对象
+										}
+									}
+								}
+
+								obj.traverse(traverse);
+							}
+							traverseMeshes(model1, meshArr)
+							traverseMeshes(model2, meshArr)
+							console.log(meshArr)
+							meshArr.forEach(mesh => {
+								geometryArray.push(mesh.geometry)
+								materialArray.push(mesh.material)
+							})
+							traverseMeshes(model3, meshArr)
+							traverseMeshes(model4, meshArr)
+					
+							meshArr.forEach(mesh => {
+								geometryArray1.push(mesh.geometry)
+								materialArray1.push(mesh.material)
+							})
 							
-								// scene.add(gltf.scene)
+							const mergedGeometries = BufferGeometryUtils.mergeGeometries(geometryArray, true);
+							const singleMergeMesh = new THREE.Mesh(mergedGeometries, materialArray)
+							const mergedGeometries1 = BufferGeometryUtils.mergeGeometries(geometryArray1, true);
+							const singleMergeMesh1 = new THREE.Mesh(mergedGeometries1, materialArray1)
+							singleMergeMesh.position.set(0, 1, 0)
+							singleMergeMesh1.position.set(2, 1, 0)
+							// 将singleMergeMesh 与 singleMergeMesh1 合并
+							const arr = []
+							const geoArr = []
+							const matArr = []
+							traverseMeshes(singleMergeMesh, arr)
+							console.log(arr)
+							const mergedGeometries2 = BufferGeometryUtils.mergeGeometries(geoArr, true);
+							const singleMergeMesh2 = new THREE.Mesh(mergedGeometries2, matArr)
+							singleMergeMesh.applyMatrix4(matrix1)
+							singleMergeMesh1.applyMatrix4(matrix2)
+							scene.add( singleMergeMesh2 ); // 在场景中添加合并后的mesh(模型)
+						
+							// scene.add( singleMergeMesh, singleMergeMesh1 ); // 在场景中添加合并后的mesh(模型)
+							console.log(scene)
+							const boundingBox = new THREE.Box3().setFromObject(singleMergeMesh2);
+							const center = boundingBox.getCenter(new THREE.Vector3());
+							console.log(center)
+							const size = boundingBox.getSize(new THREE.Vector3());
+
+							const cameraDistance = Math.max(size.x, size.y, size.z) * 2; // 调整相机距离模型的距离
+							const cameraPosition = new THREE.Vector3(center.x, center.y, center.z + cameraDistance);
+							const cameraTarget = new THREE.Vector3(center.x, center.y, center.z);
+
+							camera.position.copy(cameraPosition);
+							camera.lookAt(cameraTarget);
 							render();
 
 						} );

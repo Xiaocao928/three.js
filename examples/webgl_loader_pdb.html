@@ -75,7 +75,7 @@
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x050505 );
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 50000 );
 				camera.position.z = 1000;
 				scene.add( camera );
 
@@ -108,7 +108,7 @@
 
 				controls = new TrackballControls( camera, renderer.domElement );
 				controls.minDistance = 500;
-				controls.maxDistance = 2000;
+				controls.maxDistance = 50000;
 
 				//
 
