@@ -86,10 +86,10 @@
 				const clip = new THREE.AnimationClip( 'Action', 3, [ scaleKF, positionKF, quaternionKF, colorKF, opacityKF ] );
 
 				// setup the THREE.AnimationMixer
-				mixer = new THREE.AnimationMixer( mesh );
+				mixer = new THREE.AnimationMixer();
 
 				// create a ClipAction and set it to play
-				const clipAction = mixer.clipAction( clip );
+				const clipAction = mixer.clipAction( clip, mesh );
 				clipAction.play();
 
 				//
